@@ -1,9 +1,13 @@
-FROM golang:1.21-alpine AS builder
-WORKDIR /app
-COPY . .
-RUN go build -o parcel-tracker main.go
+FROM golang:1.22.0
 
-FROM alpine:latest
-WORKDIR /app
-COPY --from=builder /app/parcel-tracker .
-CMD ["./parcel-tracker"]
+WORKDIR /usr/src/app
+
+COPY . .
+
+RUN go mod download
+
+ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+
+RUN  go build -o /parcel_app
+
+CMD ["/parcel_app"]
